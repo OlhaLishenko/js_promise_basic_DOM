@@ -3,43 +3,30 @@
 const body = document.body;
 const logo = document.querySelector('.logo');
 
-const messageResolved = document.createElement('div');
-const messageReject = document.createElement('div');
+const message = document.createElement('div');
+const messageError = document.createElement('div');
 
-messageResolved.setAttribute('class', 'messageResolved');
-messageResolved.textContent = 'Promise was resolved!';
+message.setAttribute('class', 'message');
+message.textContent = 'Promise was resolved!';
 
-messageReject.setAttribute('class', 'messageReject');
-messageReject.textContent = 'Promise was rejected!!!';
+messageError.classList.add('message', 'error-message');
 
-async function logoPromises() {
-  try {
-    const result = await Promise.any([promise1(), promise2()]);
-
-    body.append(result);
-  } catch (errorMessage) {
-    const result = await Promise.any([promise1(), promise2()]);
-
-    body.append(result);
-  }
-}
-
-function promise1() {
-  return new Promise((resolve, reject) => {
-    logo.addEventListener('click', () => {
-      resolve(messageResolved);
-      reject(null);
-    });
+const promise1 = new Promise((resolve, reject) => {
+  logo.addEventListener('click', () => {
+    clearTimeout(timeout);
+    resolve();
   });
-}
 
-function promise2() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(messageReject);
-      reject(null);
-    }, 3000);
+  const timeout = setTimeout(() => {
+    reject();
+  }, 3000);
+});
+
+promise1
+  .then(() => {
+    body.append(message);
+  })
+  .catch(() => {
+    body.append(messageError);
+    messageError.textContent = 'Promise was rejected!';
   });
-}
-
-logoPromises();
